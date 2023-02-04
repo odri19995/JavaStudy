@@ -24,7 +24,7 @@ public class Main {
 					continue;
 				}
 				System.out.println("번호    |     내용 ");
-				for (int i = articles.size()-1; i >=0 ; i--) {
+				for (int i = articles.size() - 1; i >= 0; i--) {
 					Article article = articles.get(i); // arrayList 추출시 get 사용
 					System.out.printf("%d, %s\n", article.count, article.title);
 
@@ -47,6 +47,30 @@ public class Main {
 
 			} else if (cmd.equals("system exit")) {
 				break;
+
+			} else if (cmd.startsWith("article detail ")) {
+				String[] cmdBits = cmd.split(" ");
+				int id = Integer.valueOf(cmdBits[2]);
+
+				Article foundArticle = null;
+				for (int i = 0; i < articles.size(); i++) {
+					Article article = articles.get(i);
+
+					if (article.count == id) {
+						foundArticle = article; // foundArticle에 정보 저장
+						break; // 값을 찾았다면 탈출
+					}
+				}
+
+				if (foundArticle == null) {
+					System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
+					continue;
+				}
+				System.err.printf("%d번 게시물은 존재합니다. \n", id);// 빨간색 출력
+				System.out.printf("번호 : %d\n", foundArticle.count);
+				System.out.printf("날짜 : 2023\n");
+				System.out.printf("제목 : %s\n", foundArticle.title);
+				System.out.printf("내용 : %s\n", foundArticle.body);
 
 			} else {
 				System.out.println("존재하지 않는 명령어입니다.");
@@ -72,3 +96,4 @@ class Article {
 
 	}// 외부의 정보들이 Article 필드에 채워진다.
 }
+//영속 저장이 안됬다. 
