@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.KoreaIT.java.BasicAM.dto2.Article;
+import com.KoreaIT.java.BasicAM.dto.Article;
 import com.KoreaIT.java.BasicAM.util.Util;
 
 public class App {

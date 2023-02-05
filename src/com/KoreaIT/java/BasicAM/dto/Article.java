@@ -1,4 +1,4 @@
-package com.KoreaIT.java.BasicAM.dto2;
+package com.KoreaIT.java.BasicAM.dto;
 
 public class Article {
 	public int id;  //Data Transfer object 또는 Value object라고 한다. 왔다갔다하는 데이터
