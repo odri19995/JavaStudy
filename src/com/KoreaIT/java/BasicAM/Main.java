@@ -5,14 +5,18 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-	public static void main(String[] args) {
+	private static List<Article> articles; // 접근지정자 private값과 Static 설정
+
+	static {                                //Main() 생성자를 Static 생성자로 대체 Static은 Static 끼리
+		articles = new ArrayList<>();// 메인 메서드에 있던거 전역변수로 뺌
+	}
+
+	public static void main(String[] args) { // static은 static끼리만 소통이 가능하다.
 		System.out.println("== 프로그램 시작 ==");
 
+		makeTestData();
+
 		Scanner sc = new Scanner(System.in);
-
-		int lastArticleId = 0;
-
-		List<Article> articles = new ArrayList<>();
 
 		while (true) {
 			System.out.printf("명령어 ) ");
@@ -27,16 +31,15 @@ public class Main {
 			}
 
 			if (cmd.equals("article write")) {
-				int id = lastArticleId + 1;
-				lastArticleId = id;
-				String regDate =Util.getNowDateStr();
+				int id = articles.size() +1;
+				String regDate = Util.getNowDateStr();
 
 				System.out.printf("제목 : ");
 				String title = sc.nextLine();
 				System.out.printf("내용 : ");
 				String body = sc.nextLine();
 
-				Article article = new Article(id,regDate, title, body);
+				Article article = new Article(id, regDate, title, body);
 
 				articles.add(article);
 
@@ -50,7 +53,7 @@ public class Main {
 				System.out.println("번호	|	제목    |   조회");
 				for (int i = articles.size() - 1; i >= 0; i--) {
 					Article article = articles.get(i);
-					System.out.printf("%4d	|	%4s   |   %4d\n", article.id, article.title,article.viewCnt);
+					System.out.printf("%4d	|	%4s   |   %4d\n", article.id, article.title, article.viewCnt);
 				}
 
 			} else if (cmd.startsWith("article detail ")) {
@@ -72,11 +75,11 @@ public class Main {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 					continue;
 				}
-				
+
 				foundArticle.increaseViewCount();
-				
+
 				System.out.printf("번호 : %d\n", foundArticle.id);
-				System.out.printf("날짜 : %s\n",foundArticle.regDate);
+				System.out.printf("날짜 : %s\n", foundArticle.regDate);
 				System.out.printf("제목 : %s\n", foundArticle.title);
 				System.out.printf("내용 : %s\n", foundArticle.body);
 				System.out.printf("조회 : %d\n", foundArticle.viewCnt);
@@ -126,17 +129,16 @@ public class Main {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 					continue;
 				}
-				
+
 				System.out.printf("제목 : ");
 				String title = sc.nextLine();
 				System.out.printf("내용 : ");
 				String body = sc.nextLine();
-				
+
 				foundArticle.title = title;
 				foundArticle.body = body;
-				
-				System.out.printf(" %d번 게시물이 수정되었습니다.\n",id);
-				
+
+				System.out.printf(" %d번 게시물이 수정되었습니다.\n", id);
 
 			} else {
 				System.out.println("없는 명령어입니다");
@@ -146,6 +148,14 @@ public class Main {
 		sc.close();
 		System.out.println("== 프로그램 종료 ==");
 	}
+
+	private static void makeTestData() {
+		System.out.println("test데이터를 생성합니다.");
+		articles.add(new Article(1,Util.getNowDateStr(),"title 1","body 1",11));
+		articles.add(new Article(2,Util.getNowDateStr(),"title 2","body 2",22));
+		articles.add(new Article(3,Util.getNowDateStr(),"title 3","body 3",33));
+
+	}
 }
 
 class Article {
@@ -154,15 +164,22 @@ class Article {
 	String body;
 	String regDate;
 	int viewCnt;
+	
+	public Article(int id, String regDate, String title, String body) {
+		this(id,regDate,title,body,0); //다른 생성자를 호출해서 일을 시킨다. 값들이 매개변수값으로 들어간다.
+	}
 
-	public Article(int id,String regDate, String title, String body ) {
+	public Article(int id, String regDate, String title, String body, int viewCnt) {
 		this.id = id;
 		this.title = title;
 		this.body = body;
 		this.regDate = regDate;
-		this.viewCnt = 0; // 누군가 클릭하지 않으면 조회수는 0이다. //글을 상세보기할때 조회수가 같이 나오면 된다.
+		this.viewCnt = viewCnt; // 누군가 클릭하지 않으면 조회수는 0이다. //글을 상세보기할때 조회수가 같이 나오면 된다.
 	}
-	
+
+		
+		
+
 	public void increaseViewCount() {
 		viewCnt++;
 	}
