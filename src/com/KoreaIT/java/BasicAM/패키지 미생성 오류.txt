@@ -1,0 +1,8 @@
+The resource is not on the build path of a java project  라는 에러는
+
+프로젝트 생성 할때 build path에 Source Folder를 지정하지 않아서 생기는 에러이다.
+
+
+
+해결하는 방법은 프로젝트(우클릭) > Properties > Java Build Path > Source > Add Folder 를 순차적으로 클릭하여 해당 소스 폴더를 Add 해주면 에러가 해결된다.
+
