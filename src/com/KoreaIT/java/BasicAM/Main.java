@@ -82,8 +82,7 @@ public class Main {
 
 				int id = Integer.parseInt(cmdBits[2]);
 
-				
-				int foundIndex  = -1;  // 배열에서 못찾았다. 
+				int foundIndex = -1; // 배열에서 못찾았다.
 				for (int i = 0; i < articles.size(); i++) {
 					Article article = articles.get(i);
 
@@ -93,7 +92,7 @@ public class Main {
 					}
 				}
 
-				if (foundIndex  == -1) {
+				if (foundIndex == -1) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 					continue;
 				}
@@ -103,6 +102,37 @@ public class Main {
 				articles.remove(foundIndex);
 
 				System.out.printf("%d번 게시물이 삭제 되었습니다\n", id);
+
+			} else if (cmd.startsWith("article modify")) {
+				String[] cmdBits = cmd.split(" ");
+
+				int id = Integer.parseInt(cmdBits[2]);
+
+				Article foundArticle = null;
+				for (int i = 0; i < articles.size(); i++) {
+					Article article = articles.get(i);
+
+					if (article.id == id) {
+						foundArticle = article;
+						break;
+					}
+				}
+
+				if (foundArticle == null) {
+					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
+					continue;
+				}
+				
+				System.out.printf("제목 : ");
+				String title = sc.nextLine();
+				System.out.printf("내용 : ");
+				String body = sc.nextLine();
+				
+				foundArticle.title = title;
+				foundArticle.body = body;
+				
+				System.out.printf(" %d번 게시물이 수정되었습니다.\n",id);
+				
 
 			} else {
 				System.out.println("없는 명령어입니다");
