@@ -53,17 +53,6 @@ public class App {
 
 				System.out.printf("%d번 글이 생성되었습니다\n", id);
 
-			} else if (cmd.equals("article list")) {
-				if (articles.size() == 0) {
-					System.out.println("게시글이 없습니다");
-					continue;
-				}
-				System.out.println("번호	|	제목    | 조회수");
-				for (int i = articles.size() - 1; i >= 0; i--) {
-					Article article = articles.get(i);
-					System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
-				}
-
 			} else if (cmd.startsWith("article list")) {
 
 				if (articles.size() == 0) {
@@ -72,20 +61,28 @@ public class App {
 				}
 
 				String searchKeyword = cmd.substring("article list".length()).trim();
-				System.out.println("번호	|	제목    | 조회수");
+
+				List<Article> printArticles = articles; // articles를 컨트롤 하기 위해서 리모컨을 넘겨줌
 				if (searchKeyword.length() > 0) {
 					System.out.println("검색어 :" + searchKeyword);
+
+					printArticles = new ArrayList<>(); // 내용이 있을때만 리스트를 만들어준다. 진짜 객체 생성
 					for (Article article : articles) {
 						if (article.title.contains(searchKeyword)) {
-							System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
+							printArticles.add(article);
 						}
 					}
-
-				} else {
-					for (int i = articles.size() - 1; i >= 0; i--) {
-						Article article = articles.get(i);
-						System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
+					if(printArticles.size()== 0) {
+						System.out.println("검색결과가 없습니다.");
+						continue;
 					}
+
+				}
+				System.out.println("번호	|	제목    | 조회수");
+				for (int i = printArticles.size() - 1; i >= 0; i--) {
+					Article article = printArticles.get(i);
+					System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
+
 				}
 
 			} else if (cmd.startsWith("article detail ")) {
