@@ -64,12 +64,36 @@ public class App {
 					System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
 				}
 
+			} else if (cmd.startsWith("article list")) {
+
+				if (articles.size() == 0) {
+					System.out.println("게시글이 없습니다");
+					continue;
+				}
+
+				String searchKeyword = cmd.substring("article list".length()).trim();
+				System.out.println("번호	|	제목    | 조회수");
+				if (searchKeyword.length() > 0) {
+					System.out.println("검색어 :" + searchKeyword);
+					for (Article article : articles) {
+						if (article.title.contains(searchKeyword)) {
+							System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
+						}
+					}
+
+				} else {
+					for (int i = articles.size() - 1; i >= 0; i--) {
+						Article article = articles.get(i);
+						System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
+					}
+				}
+
 			} else if (cmd.startsWith("article detail ")) {
 				String[] cmdBits = cmd.split(" ");
 
 				int id = Integer.parseInt(cmdBits[2]);
 
-				Article foundArticle = getArticleById(id);	
+				Article foundArticle = getArticleById(id);
 
 				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
@@ -89,7 +113,6 @@ public class App {
 				int id = Integer.parseInt(cmdBits[2]);
 
 				Article foundArticle = getArticleById(id);
-				
 
 				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
@@ -107,7 +130,6 @@ public class App {
 
 				int id = Integer.parseInt(cmdBits[2]);
 				Article foundArticle = getArticleById(id);
-				
 
 				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
@@ -135,23 +157,11 @@ public class App {
 
 	}
 
-//	private int getArticleIdxById(int id) {
-//		int i = 0;
-//		for (Article article : articles) {
-//
-//			if (article.id == id) {
-//				return i;
-//			}
-//			i++;
-//		}
-//		return -1;
-//	}
-
 	private Article getArticleById(int id) {
-		
-		for(Article article : articles ) {		
-		if(article.id == id)
-			return article;
+
+		for (Article article : articles) {
+			if (article.id == id)
+				return article;
 		}
 
 		return null;
