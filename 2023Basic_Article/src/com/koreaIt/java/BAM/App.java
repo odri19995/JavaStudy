@@ -88,17 +88,17 @@ public class App {
 
 				int id = Integer.parseInt(cmdBits[2]);
 
-				int foundIndex = getArticleIdxById(id);
+				Article foundArticle = getArticleById(id);
 				
 
-				if (foundIndex == -1) {
+				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 					continue;
 				}
 				// size() = 3
 				// index = 0 1 2
 				// id = 1 2 3
-				articles.remove(foundIndex);
+				articles.remove(articles.indexOf(foundArticle));
 
 				System.out.printf("%d번 게시물이 삭제 되었습니다\n", id);
 
@@ -135,24 +135,23 @@ public class App {
 
 	}
 
-	private int getArticleIdxById(int id) {
-		int i = 0;
-		for (Article article : articles) {
-
-			if (article.id == id) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
+//	private int getArticleIdxById(int id) {
+//		int i = 0;
+//		for (Article article : articles) {
+//
+//			if (article.id == id) {
+//				return i;
+//			}
+//			i++;
+//		}
+//		return -1;
+//	}
 
 	private Article getArticleById(int id) {
 		
-		int index = getArticleIdxById(id);
-		
-		if(index != -1) {
-			return articles.get(index);
+		for(Article article : articles ) {		
+		if(article.id == id)
+			return article;
 		}
 
 		return null;
