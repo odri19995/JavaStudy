@@ -5,14 +5,17 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.koreaIt.java.BAM.dto.Article;
+import com.koreaIt.java.BAM.dto.Member;
 import com.koreaIt.java.BAM.util.Util;
 
 public class App {
 
 	private List<Article> articles; // 메인 메서드가 아니라서 static 변수를 할 필요가 없다. //여기서만 쓸거니까 private
+	private List<Member> members;
 
 	App() {
 		articles = new ArrayList<>();
+		members = new ArrayList<>();
 	}
 
 	public void run() {
@@ -32,16 +35,14 @@ public class App {
 				System.out.println("명령어를 입력하세요");
 				continue;
 			}
-			if (cmd.equals("system exit")) {
+			if (cmd.equals("system exit")) {// 불필요한 명령을 거르기 위해서 특수한 명령어는 위로 빼준다.
 				break;
 			}
 
 			if (cmd.equals("article write")) {
 				int id = lastArticleId + 1;
 				lastArticleId = id;
-
 				String regDate = Util.getNowDateStr();
-
 				System.out.printf("제목 : ");
 				String title = sc.nextLine();
 				System.out.printf("내용 : ");
@@ -52,6 +53,50 @@ public class App {
 				articles.add(article);
 
 				System.out.printf("%d번 글이 생성되었습니다\n", id);
+
+			} else if (cmd.equals("member join")) {
+				int id = lastArticleId + 1;
+				lastArticleId = id;
+				String regDate = Util.getNowDateStr();
+
+				String loginId = null; //지역변수들은 초기화가 안될수도 없으므로 기본값을 넣어주는게 좋다.
+
+				while (true) {
+					System.out.printf("로그인 아이디 : ");
+					loginId = sc.nextLine();
+
+					if (isJoinableLoginId(loginId) == false) {
+						System.out.printf("%s는(은) 이미 사용중인 아이디입니다.\n", loginId);
+						continue; //다시 입력받아야 하므로 break가 안실행되게 위로 올린다.
+					}
+					System.out.printf("%s는(은) 이미 사용가능한 아이디입니다.\n", loginId);
+					break;
+				}
+				String loginPw = null;
+				String loginPwConfirm = null; //밖에서 쓸때는 밖에 빼주면 된다. 
+
+				while (true) {
+					System.out.printf("로그인 비밀번호 : ");
+					loginPw = sc.nextLine();
+					System.out.printf("로그인 비밀번호 확인: ");
+					loginPwConfirm = sc.nextLine();
+
+					if (loginPw.equals(loginPwConfirm) == false) {
+						System.out.println("비밀번호를 다시 입력해주세요.");
+						continue;
+					} 
+
+					break;  //보통 브레이크가 continue보다 밑에 있는게 좋다. 
+				}
+
+				System.out.printf("이름 : ");
+				String name = sc.nextLine();
+
+				Member member = new Member(id, regDate, loginId, loginPw, name);
+				members.add(member);
+
+				System.out.printf("%d번 회원이 생성되었습니다. 환영합니다.\n", id);
+					
 
 			} else if (cmd.startsWith("article list")) {
 
@@ -72,9 +117,9 @@ public class App {
 							printArticles.add(article);
 						}
 					}
-					if(printArticles.size()== 0) {
+					if (printArticles.size() == 0) {
 						System.out.println("검색결과가 없습니다.");
-						continue;
+						continue; // continue는 위에 반복문 while문으로 간다.
 					}
 
 				}
@@ -145,13 +190,34 @@ public class App {
 			}
 
 			else {
-				System.out.println("없는 명령어입니다");
+				System.out.println("없는 명령어입니다"); // 전부 따져봐야해서 밑으로 놓는다.
 			}
 		}
 
 		sc.close();
 		System.out.println("== 프로그램 종료 ==");
 
+	}
+
+	private boolean isJoinableLoginId(String loginId) {
+		int index = getMemberIndexByLoginId(loginId);
+
+		if (index == -1) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	private int getMemberIndexByLoginId(String loginId) {
+		int i = 0;
+		for (Member member : members) {
+			if (member.loginId.equals(loginId)) {
+				return i; //false
+			}
+			i++;
+		}
+		return -1;
 	}
 
 	private Article getArticleById(int id) {
