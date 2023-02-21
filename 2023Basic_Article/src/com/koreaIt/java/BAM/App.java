@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.koreaIt.java.BAM.controller.MemberController;
 import com.koreaIt.java.BAM.dto.Article;
 import com.koreaIt.java.BAM.dto.Member;
 import com.koreaIt.java.BAM.util.Util;
@@ -24,9 +25,11 @@ public class App {
 		makeTestData();
 
 		Scanner sc = new Scanner(System.in);
+		
+		MemberController memberController = new MemberController(members ,sc);
 
 		int lastArticleId = 3;
-		int lastMemberId = 0;
+		
 
 		while (true) {
 			System.out.printf("명령어 ) ");
@@ -56,48 +59,9 @@ public class App {
 				System.out.printf("%d번 글이 생성되었습니다\n", id);
 
 			} else if (cmd.equals("member join")) {
-				int id = lastMemberId + 1;
-				lastMemberId = id;
-				String regDate = Util.getNowDateStr();
-
-				String loginId = null; //지역변수들은 초기화가 안될수도 없으므로 기본값을 넣어주는게 좋다.
-
-				while (true) {
-					System.out.printf("로그인 아이디 : ");
-					loginId = sc.nextLine();
-
-					if (isJoinableLoginId(loginId) == false) {
-						System.out.printf("%s는(은) 이미 사용중인 아이디입니다.\n", loginId);
-						continue; //다시 입력받아야 하므로 break가 안실행되게 위로 올린다.
-					}
-					System.out.printf("%s는(은) 이미 사용가능한 아이디입니다.\n", loginId);
-					break;
-				}
-				String loginPw = null;
-				String loginPwConfirm = null; //밖에서 쓸때는 밖에 빼주면 된다. 
-
-				while (true) {
-					System.out.printf("로그인 비밀번호 : ");
-					loginPw = sc.nextLine();
-					System.out.printf("로그인 비밀번호 확인: ");
-					loginPwConfirm = sc.nextLine();
-
-					if (loginPw.equals(loginPwConfirm) == false) {
-						System.out.println("비밀번호를 다시 입력해주세요.");
-						continue;
-					} 
-
-					break;  //보통 브레이크가 continue보다 밑에 있는게 좋다. 
-				}
-
-				System.out.printf("이름 : ");
-				String name = sc.nextLine();
-
-				Member member = new Member(id, regDate, loginId, loginPw, name);
-				members.add(member);
-
-				System.out.printf("%d번 회원이 생성되었습니다. 환영합니다.\n", id);
-					
+				
+				memberController.doJoin();
+				
 
 			} else if (cmd.startsWith("article list")) {
 
@@ -200,26 +164,7 @@ public class App {
 
 	}
 
-	private boolean isJoinableLoginId(String loginId) {
-		int index = getMemberIndexByLoginId(loginId);
 
-		if (index == -1) {
-			return true;
-		}
-
-		return false;
-	}
-	
-	private int getMemberIndexByLoginId(String loginId) {
-		int i = 0;
-		for (Member member : members) {
-			if (member.loginId.equals(loginId)) {
-				return i; //false
-			}
-			i++;
-		}
-		return -1;
-	}
 
 	private Article getArticleById(int id) {
 
