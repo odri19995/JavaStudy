@@ -26,6 +26,7 @@ public class App {
 		Scanner sc = new Scanner(System.in);
 
 		int lastArticleId = 3;
+		int lastMemberId = 0;
 
 		while (true) {
 			System.out.printf("명령어 ) ");
@@ -55,8 +56,8 @@ public class App {
 				System.out.printf("%d번 글이 생성되었습니다\n", id);
 
 			} else if (cmd.equals("member join")) {
-				int id = lastArticleId + 1;
-				lastArticleId = id;
+				int id = lastMemberId + 1;
+				lastMemberId = id;
 				String regDate = Util.getNowDateStr();
 
 				String loginId = null; //지역변수들은 초기화가 안될수도 없으므로 기본값을 넣어주는게 좋다.
