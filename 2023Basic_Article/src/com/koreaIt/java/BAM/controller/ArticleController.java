@@ -7,11 +7,36 @@ import java.util.Scanner;
 import com.koreaIt.java.BAM.dto.Article;
 import com.koreaIt.java.BAM.util.Util;
 
-public class ArticleController {
+public class ArticleController extends Controller {
 
 	private Scanner sc;
 	private List<Article> articles;
 	int lastArticleId;
+	private String cmd;
+	private String MethodName;
+
+	public void doAction(String cmd, String MethodName) {
+		this.cmd = cmd;
+		this.MethodName = MethodName;
+
+		switch (MethodName) {
+		case "list":
+			showList();
+			break;
+		case "detail":
+			showDetail();
+			break;
+		case "write":
+			doWrite();
+			break;
+		case "modify":
+			doModify();
+			break;
+		case "delete":
+			doDelete();
+			break;
+		}
+	}
 
 	public ArticleController(List<Article> articles, Scanner sc) {
 		this.sc = sc;
@@ -35,7 +60,7 @@ public class ArticleController {
 		System.out.printf("%d번 글이 생성되었습니다\n", id);
 	}
 
-	public void showList(String cmd) {
+	public void showList() {
 
 		if (articles.size() == 0) {
 			System.out.println("게시글이 없습니다");
@@ -66,7 +91,8 @@ public class ArticleController {
 			System.out.printf("%d	|	%s|   %d\n", article.id, article.title, article.viewCnt);
 		}
 	}
-	public void showDetail(String cmd) {
+
+	public void showDetail() {
 		String[] cmdBits = cmd.split(" ");
 
 		int id = Integer.parseInt(cmdBits[2]);
@@ -86,7 +112,8 @@ public class ArticleController {
 		foundArticle.increaseViewCount();
 
 	}
-	public void doDelete(String cmd) {
+
+	public void doDelete() {
 		String[] cmdBits = cmd.split(" ");
 
 		int id = Integer.parseInt(cmdBits[2]);
@@ -105,7 +132,8 @@ public class ArticleController {
 		System.out.printf("%d번 게시물이 삭제 되었습니다\n", id);
 
 	}
-	public void doModify(String cmd) {
+
+	public void doModify() {
 		String[] cmdBits = cmd.split(" ");
 
 		int id = Integer.parseInt(cmdBits[2]);
@@ -126,6 +154,7 @@ public class ArticleController {
 		System.out.printf("%d글이 수정되었습니다.\n", id);
 
 	}
+
 	private Article getArticleById(int id) {
 
 		for (Article article : articles) {

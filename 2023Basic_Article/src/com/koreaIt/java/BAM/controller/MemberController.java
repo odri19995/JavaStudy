@@ -6,16 +6,30 @@ import java.util.Scanner;
 import com.koreaIt.java.BAM.dto.Member;
 import com.koreaIt.java.BAM.util.Util;
 
-public class MemberController {
+public class MemberController extends Controller {
 	private Scanner sc;
 	private List<Member> members;
 	int lastMemberId;
+    private String cmd;
+	private String MethodName;
+
 
 	public MemberController( List<Member> members,Scanner sc) {
 		this.sc = sc;
 		this.members = members;
 		this.lastMemberId =0;
 	}
+	
+	public void doAction(String cmd, String MethodName) {
+		this.cmd = cmd;
+		
+		switch (MethodName) {
+		case "join":
+			doJoin();
+			break;
+		}
+	}
+	
 
 	public void doJoin() {
 		int id = lastMemberId +1;
@@ -84,5 +98,7 @@ public class MemberController {
 
 		return -1;
 	}
+
+
 
 }

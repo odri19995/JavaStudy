@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.koreaIt.java.BAM.controller.ArticleController;
+import com.koreaIt.java.BAM.controller.Controller;
 import com.koreaIt.java.BAM.controller.MemberController;
 import com.koreaIt.java.BAM.dto.Article;
 import com.koreaIt.java.BAM.dto.Member;
@@ -41,20 +42,37 @@ public class App {
 			if (cmd.equals("system exit")) {// 불필요한 명령을 거르기 위해서 특수한 명령어는 위로 빼준다.
 				break;
 			}
+			String[] cmdBits = cmd.split(" "); // article list
 
-			if (cmd.equals("article write")) {
-				articleController.doWrite();
-			} else if (cmd.equals("member join")) {
-				memberController.doJoin();
-			} else if (cmd.startsWith("article list")) {
-				articleController.showList(cmd);
-			}else if (cmd.startsWith("article detail ")) {
-				articleController.showDetail(cmd);
-			} else if (cmd.startsWith("article delete ")) {
-				articleController.doDelete(cmd);
-			} else if (cmd.startsWith("article modify ")) {
-				articleController.doModify(cmd);
+			if (cmdBits.length == 1) {
+				System.out.println("존재하지 않는 명령어입니다.");
+				continue;
 			}
+
+			String controllerName = cmdBits[0]; // article
+			String MethodName = cmdBits[1]; // list
+
+
+
+			if (controllerName.equals("article")) {
+				articleController.doAction(cmd,MethodName);
+			} else if (controllerName.equals("member")) {
+				memberController.doAction(cmd,MethodName);
+				}
+
+//			if (cmd.equals("article write")) {
+//				articleController.doWrite();
+//			} else if (cmd.equals("member join")) {
+//				memberController.doJoin();
+//			} else if (cmd.startsWith("article list")) {
+//				articleController.showList(cmd);
+//			}else if (cmd.startsWith("article detail ")) {
+//				articleController.showDetail(cmd);
+//			} else if (cmd.startsWith("article delete ")) {
+//				articleController.doDelete(cmd);
+//			} else if (cmd.startsWith("article modify ")) {
+//				articleController.doModify(cmd);
+//			}
 			else {
 				System.out.println("없는 명령어입니다"); // 전부 따져봐야해서 밑으로 놓는다.
 			}
