@@ -44,38 +44,29 @@ public class App {
 			}
 			String[] cmdBits = cmd.split(" "); // article list
 
-			if (cmdBits.length == 1) {
+			if (cmdBits.length == 1) {// article만 쳤을경우 cmdBit[1]이 없어서 오류나는 것을 막는다.
 				System.out.println("존재하지 않는 명령어입니다.");
 				continue;
 			}
 
 			String controllerName = cmdBits[0]; // article
 			String MethodName = cmdBits[1]; // list
+			
+			Controller controller = null;
 
 
 
 			if (controllerName.equals("article")) {
-				articleController.doAction(cmd,MethodName);
+				controller = articleController;
 			} else if (controllerName.equals("member")) {
-				memberController.doAction(cmd,MethodName);
+				controller = memberController;
 				}
-
-//			if (cmd.equals("article write")) {
-//				articleController.doWrite();
-//			} else if (cmd.equals("member join")) {
-//				memberController.doJoin();
-//			} else if (cmd.startsWith("article list")) {
-//				articleController.showList(cmd);
-//			}else if (cmd.startsWith("article detail ")) {
-//				articleController.showDetail(cmd);
-//			} else if (cmd.startsWith("article delete ")) {
-//				articleController.doDelete(cmd);
-//			} else if (cmd.startsWith("article modify ")) {
-//				articleController.doModify(cmd);
-//			}
 			else {
 				System.out.println("없는 명령어입니다"); // 전부 따져봐야해서 밑으로 놓는다.
+				continue;
 			}
+			
+			controller.doAction(cmd, MethodName);
 		}
 
 		sc.close();
