@@ -13,11 +13,14 @@ public class ArticleController extends Controller {
 	private List<Article> articles;
 	int lastArticleId;
 	private String cmd;
-	private String MethodName;
 
+	public ArticleController(Scanner sc) {
+		this.sc = sc;
+		this.articles = new ArrayList<>();
+		this.lastArticleId = 3;
+	}
 	public void doAction(String cmd, String MethodName) {
 		this.cmd = cmd;
-		this.MethodName = MethodName;
 
 		switch (MethodName) {
 		case "list":
@@ -35,16 +38,14 @@ public class ArticleController extends Controller {
 		case "delete":
 			doDelete();
 			break;
+		default: 
+			System.out.println("존재하지 않는 명령어 입니다.");
+			break;
 		}
 	}
 
-	public ArticleController(List<Article> articles, Scanner sc) {
-		this.sc = sc;
-		this.articles = articles;
-		this.lastArticleId = 3;
-	}
 
-	public void doWrite() {
+	private void doWrite() {
 		int id = lastArticleId + 1;
 		lastArticleId = id;
 		String regDate = Util.getNowDateStr();
@@ -60,7 +61,7 @@ public class ArticleController extends Controller {
 		System.out.printf("%d번 글이 생성되었습니다\n", id);
 	}
 
-	public void showList() {
+	private void showList() {
 
 		if (articles.size() == 0) {
 			System.out.println("게시글이 없습니다");
@@ -92,8 +93,13 @@ public class ArticleController extends Controller {
 		}
 	}
 
-	public void showDetail() {
+	private void showDetail() {
 		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length ==2) {
+			System.out.println("명령어를 더 넣어주세요.");
+			return;
+		}
 
 		int id = Integer.parseInt(cmdBits[2]);
 
@@ -113,8 +119,13 @@ public class ArticleController extends Controller {
 
 	}
 
-	public void doDelete() {
+	private void doDelete() {
 		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length ==2) {
+			System.out.println("명령어를 더 넣어주세요.");
+			return;
+		}
 
 		int id = Integer.parseInt(cmdBits[2]);
 
@@ -133,8 +144,13 @@ public class ArticleController extends Controller {
 
 	}
 
-	public void doModify() {
+	private void doModify() {
 		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length ==2) {
+			System.out.println("명령어를 더 넣어주세요.");
+			return;
+		}
 
 		int id = Integer.parseInt(cmdBits[2]);
 		Article foundArticle = getArticleById(id);
@@ -163,6 +179,12 @@ public class ArticleController extends Controller {
 		}
 
 		return null;
+	}
+	public void makeTestData() {
+		System.out.println("게시물 테스트 데이터를 생성합니다.");
+		articles.add(new Article(1, Util.getNowDateStr(), "title 1", "body 1", 10));
+		articles.add(new Article(2, Util.getNowDateStr(), "title 2", "body 2", 20));
+		articles.add(new Article(3, Util.getNowDateStr(), "title 3", "body 3", 30));
 	}
 
 }

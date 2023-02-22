@@ -13,24 +13,17 @@ import com.koreaIt.java.BAM.util.Util;
 
 public class App {
 
-	private List<Article> articles; // 메인 메서드가 아니라서 static 변수를 할 필요가 없다. //여기서만 쓸거니까 private
-	private List<Member> members;
-
-	App() {
-		articles = new ArrayList<>();
-		members = new ArrayList<>();
-	}
 
 	public void run() {
 		System.out.println("== 프로그램 시작 ==");
 
-		makeTestData();
 
 		Scanner sc = new Scanner(System.in);
 
-		MemberController memberController = new MemberController(members, sc);
-		ArticleController articleController = new ArticleController(articles, sc);
+		MemberController memberController = new MemberController(sc);
+		ArticleController articleController = new ArticleController(sc);
 
+		articleController.makeTestData();
 		while (true) {
 			System.out.printf("명령어 ) ");
 			String cmd = sc.nextLine().trim();
@@ -74,11 +67,6 @@ public class App {
 
 	}
 
-	private void makeTestData() {
-		System.out.println("게시물 테스트 데이터를 생성합니다.");
-		articles.add(new Article(1, Util.getNowDateStr(), "title 1", "body 1", 10));
-		articles.add(new Article(2, Util.getNowDateStr(), "title 2", "body 2", 20));
-		articles.add(new Article(3, Util.getNowDateStr(), "title 3", "body 3", 30));
-	}
+
 
 }
