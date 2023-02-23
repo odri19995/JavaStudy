@@ -10,31 +10,35 @@ import com.koreaIt.java.BAM.util.Util;
 public class MemberController extends Controller {
 	private Scanner sc;
 	private List<Member> members;
-	int lastMemberId;
-
+	private int lastMemberId;
+	private Member loginedMember;
 
 	public MemberController(Scanner sc) {
 		this.sc = sc;
 		this.members = new ArrayList<>();
-		this.lastMemberId =0;
+		this.lastMemberId = 3;
 	}
-	
+
 	public void doAction(String cmd, String MethodName) {
-		
+
 		switch (MethodName) {
 		case "join":
 			doJoin();
 			break;
 		case "login":
-			dologin();
-		default: 
+			doLogin();
+			break;
+		case "logout":
+			doLogout();
+			break;
+		default:
 			System.out.println("존재하지 않는 명령어 입니다.");
 			break;
 		}
 	}
 
 	private void doJoin() {
-		int id = lastMemberId +1;
+		int id = lastMemberId + 1;
 		lastMemberId = id;
 		String regDate = Util.getNowDateStr();
 
@@ -79,47 +83,68 @@ public class MemberController extends Controller {
 
 	}
 
-	private void dologin() {
+	private void doLogin() {
+		if (isLogined()) {
+			System.out.println("이미 로그인 상태입니다.");
+			return;
+		}
 
-			System.out.printf("로그인 아이디 : ");
-			String loginId = sc.nextLine();
-			System.out.printf("로그인 비밀번호 : ");
-			String loginPw = sc.nextLine();
-			
-			Member member = getMemberByLoginId(loginId); //loginId로 해당 member를 가져올것이다.
-			
-			if(member ==null ) {
-				System.out.println("존재하지 않는 아이디 입니다.");
-				return;
-			}
-			if(member.loginPw.equals(loginPw)== false) {
-				System.out.println("비밀번호를 확인해주세요.");
-				return;
-			}else {
-				System.out.printf("로그인 성공 %s님 안녕하세요\n",member.name);
-			}
+		System.out.printf("로그인 아이디 : ");
+		String loginId = sc.nextLine();
+		System.out.printf("로그인 비밀번호 : ");
+		String loginPw = sc.nextLine();
 
-		
+		Member member = getMemberByLoginId(loginId); // loginId로 해당 member를 가져올것이다.
+
+		if (member == null) {
+			System.out.println("존재하지 않는 아이디 입니다.");
+			return;
+		}
+		if (member.loginPw.equals(loginPw) == false) {
+			System.out.println("비밀번호를 확인해주세요.");
+			return;
+		} else {
+			this.loginedMember = member; // 추가가능 기능 로그인시 중복로그인확인, 로그아웃기능
+			System.out.printf("로그인 성공! %s님 안녕하세요\n", member.name);
+		}
+
 	}
 
+	private void doLogout() {
+		if (isLogined()) {
+			this.loginedMember = null;
+			System.out.println("로그아웃 되었습니다.");
+			return;
+		}
+		System.out.println("로그인 되어있지 있지 않습니다.");
+	}
+	
+	private boolean isLogined() {
+		return loginedMember != null;
+	}
 
 	private Member getMemberByLoginId(String loginId) {
-		for(Member member : members) {
-			if(member.loginId.equals(loginId)) {
+		for (Member member : members) {
+			if (member.loginId.equals(loginId)) {
 				return member;
 			}
 		}
 		return null;
 	}
-	
+
 	private boolean loginIdDupChk(String loginId) {
 		Member member = getMemberByLoginId(loginId);
-		
-		if(member == null) {
+
+		if (member == null) {
 			return true;
 		}
 		return false;
 	}
 
+	public void makeTestData() {
+		members.add(new Member(1, Util.getNowDateStr(), "ABC", "123", "minsu"));
+		members.add(new Member(2, Util.getNowDateStr(), "title 2", "body 2", "simin"));
+		members.add(new Member(3, Util.getNowDateStr(), "title 3", "body 3", "happy"));
+	}
 
 }
