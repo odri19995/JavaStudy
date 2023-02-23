@@ -25,12 +25,13 @@ public class MemberController extends Controller {
 		case "join":
 			doJoin();
 			break;
+		case "login":
+			dologin();
 		default: 
 			System.out.println("존재하지 않는 명령어 입니다.");
 			break;
 		}
 	}
-	
 
 	private void doJoin() {
 		int id = lastMemberId +1;
@@ -43,7 +44,7 @@ public class MemberController extends Controller {
 			System.out.printf("로그인 아이디 : ");
 			loginId = sc.nextLine();
 
-			if (isJoinableLoginId(loginId) == false) {
+			if (loginIdDupChk(loginId) == false) {
 				System.out.printf("%s는(은) 이미 사용중인 아이디입니다.\n", loginId);
 				continue;
 			}
@@ -78,28 +79,47 @@ public class MemberController extends Controller {
 
 	}
 
-	private boolean isJoinableLoginId(String loginId) {
-		int index = getMemberIndexByLoginId(loginId);
+	private void dologin() {
 
-		if (index == -1) {
+			System.out.printf("로그인 아이디 : ");
+			String loginId = sc.nextLine();
+			System.out.printf("로그인 비밀번호 : ");
+			String loginPw = sc.nextLine();
+			
+			Member member = getMemberByLoginId(loginId); //loginId로 해당 member를 가져올것이다.
+			
+			if(member ==null ) {
+				System.out.println("존재하지 않는 아이디 입니다.");
+				return;
+			}
+			if(member.loginPw.equals(loginPw)== false) {
+				System.out.println("비밀번호를 확인해주세요.");
+				return;
+			}else {
+				System.out.printf("로그인 성공 %s님 안녕하세요\n",member.name);
+			}
+
+		
+	}
+
+
+	private Member getMemberByLoginId(String loginId) {
+		for(Member member : members) {
+			if(member.loginId.equals(loginId)) {
+				return member;
+			}
+		}
+		return null;
+	}
+	
+	private boolean loginIdDupChk(String loginId) {
+		Member member = getMemberByLoginId(loginId);
+		
+		if(member == null) {
 			return true;
 		}
-
 		return false;
 	}
-
-	private int getMemberIndexByLoginId(String loginId) {
-		int i = 0;
-		for (Member member : members) {
-			if (member.loginId.equals(loginId)) {
-				return i;
-			}
-			i++;
-		}
-
-		return -1;
-	}
-
 
 
 }
