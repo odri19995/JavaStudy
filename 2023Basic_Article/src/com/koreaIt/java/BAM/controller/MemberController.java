@@ -11,7 +11,7 @@ public class MemberController extends Controller {
 	private Scanner sc;
 	private List<Member> members;
 	private int lastMemberId;
-	private Member loginedMember;
+
 
 	public MemberController(Scanner sc) {
 		this.sc = sc;
@@ -113,7 +113,7 @@ public class MemberController extends Controller {
 			System.out.println("비밀번호를 확인해주세요.");
 			return;
 		} else {
-			this.loginedMember = member; // 추가가능 기능 로그인시 중복로그인확인, 로그아웃기능
+			loginedMember = member; // 추가가능 기능 로그인시 중복로그인확인, 로그아웃기능
 			System.out.printf("로그인 성공! %s님 안녕하세요\n", member.name);
 		}
 
@@ -121,7 +121,7 @@ public class MemberController extends Controller {
 
 	private void doLogout() {
 		if (isLogined()) {
-			this.loginedMember = null;
+			loginedMember = null;
 			System.out.println("로그아웃 되었습니다.");
 			return;
 		}
@@ -129,7 +129,7 @@ public class MemberController extends Controller {
 	}
 
 	private void doProfile() {
-		Member member = this.loginedMember;
+		Member member = loginedMember;
 		if (isLogined() == false) {
 			System.out.println("로그인 후 이용해 주세요.");
 		}else {
@@ -141,9 +141,7 @@ public class MemberController extends Controller {
 		
 	}
 
-	private boolean isLogined() {
-		return loginedMember != null;
-	}
+
 
 	private Member getMemberByLoginId(String loginId) {
 		for (Member member : members) {
