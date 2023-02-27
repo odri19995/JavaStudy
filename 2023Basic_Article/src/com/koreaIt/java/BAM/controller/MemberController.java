@@ -12,7 +12,6 @@ public class MemberController extends Controller {
 	private List<Member> members;
 	private int lastMemberId;
 
-
 	public MemberController(Scanner sc) {
 		this.sc = sc;
 		this.members = new ArrayList<>();
@@ -41,12 +40,7 @@ public class MemberController extends Controller {
 	}
 
 	private void doJoin() {
-		
-		if(isLogined()) {
-			System.out.println("로그인 상태에서는 이용할 수 없습니다.");
-			return;
-		}
-		
+
 		int id = lastMemberId + 1;
 		lastMemberId = id;
 		String regDate = Util.getNowDateStr();
@@ -93,11 +87,6 @@ public class MemberController extends Controller {
 	}
 
 	private void doLogin() {
-		if (isLogined()) {
-			System.out.println("이미 로그인 상태입니다.");
-			return;
-		}
-
 		System.out.printf("로그인 아이디 : ");
 		String loginId = sc.nextLine();
 		System.out.printf("로그인 비밀번호 : ");
@@ -120,28 +109,20 @@ public class MemberController extends Controller {
 	}
 
 	private void doLogout() {
-		if (isLogined()) {
-			loginedMember = null;
-			System.out.println("로그아웃 되었습니다.");
-			return;
-		}
-		System.out.println("로그인 되어있지 있지 않습니다.");
+		loginedMember = null;
+		System.out.println("로그아웃 되었습니다.");
+		return;
 	}
 
 	private void doProfile() {
 		Member member = loginedMember;
-		if (isLogined() == false) {
-			System.out.println("로그인 후 이용해 주세요.");
-		}else {
-			System.out.println(" === 내 정보 ===");
-			System.out.printf("로그인 아이디 : %s\n", member.loginId);
-			System.out.printf("이름 : %s\n",member.name);
-			System.out.printf("가입날짜 : %s\n",member.regDate);
-		}
-		
+
+		System.out.println(" === 내 정보 ===");
+		System.out.printf("로그인 아이디 : %s\n", member.loginId);
+		System.out.printf("이름 : %s\n", member.name);
+		System.out.printf("가입날짜 : %s\n", member.regDate);
+
 	}
-
-
 
 	private Member getMemberByLoginId(String loginId) {
 		for (Member member : members) {
