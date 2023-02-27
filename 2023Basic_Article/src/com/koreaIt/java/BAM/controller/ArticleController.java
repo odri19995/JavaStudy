@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.koreaIt.java.BAM.container.Container;
 import com.koreaIt.java.BAM.dto.Article;
+import com.koreaIt.java.BAM.dto.Member;
 import com.koreaIt.java.BAM.util.Util;
 
 public class ArticleController extends Controller {
@@ -16,9 +18,10 @@ public class ArticleController extends Controller {
 
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
-		this.articles = new ArrayList<>();
+		this.articles = Container.articleDao.articles;
 		this.lastArticleId = 3;
 	}
+
 	public void doAction(String cmd, String MethodName) {
 		this.cmd = cmd;
 
@@ -38,15 +41,13 @@ public class ArticleController extends Controller {
 		case "delete":
 			doDelete();
 			break;
-		default: 
+		default:
 			System.out.println("존재하지 않는 명령어 입니다.");
 			break;
 		}
 	}
 
-
 	private void doWrite() {
-		
 
 		int id = lastArticleId + 1;
 		lastArticleId = id;
@@ -56,7 +57,7 @@ public class ArticleController extends Controller {
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 
-		Article article = new Article(id, regDate,loginedMember.id, title, body);
+		Article article = new Article(id, regDate, loginedMember.id, title, body);
 
 		articles.add(article);
 
@@ -91,14 +92,23 @@ public class ArticleController extends Controller {
 		System.out.println("번호	|	제목    | 작성자	| 조회수");
 		for (int i = printArticles.size() - 1; i >= 0; i--) {
 			Article article = printArticles.get(i);
-			System.out.printf("%d	|	%s|    %d   |%d\n", article.id, article.title,article.memberId, article.viewCnt);
+			String writerName= null;
+			List<Member> members = Container.memberDao.members;
+			
+			for(Member member :members) {
+				if(article.memberId== member.id){	
+					writerName= member.name;
+					break;
+					}
+				}
+			System.out.printf("%d	|	%s|    %s   |%d\n", article.id, article.title,writerName, article.viewCnt);
 		}
 	}
 
 	private void showDetail() {
 		String[] cmdBits = cmd.split(" ");
-		
-		if(cmdBits.length ==2) {
+
+		if (cmdBits.length == 2) {
 			System.out.println("명령어를 더 넣어주세요.");
 			return;
 		}
@@ -121,11 +131,11 @@ public class ArticleController extends Controller {
 
 	}
 
-	private void doDelete() {		
-		
+	private void doDelete() {
+
 		String[] cmdBits = cmd.split(" ");
-		
-		if(cmdBits.length ==2) {
+
+		if (cmdBits.length == 2) {
 			System.out.println("명령어를 더 넣어주세요.");
 			return;
 		}
@@ -138,16 +148,15 @@ public class ArticleController extends Controller {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
-		if(foundArticle.memberId != loginedMember.id) {
+		if (foundArticle.memberId != loginedMember.id) {
 			System.out.println("수정 권한이 없습니다.");
 			return;
 		}
-		
 
 		// size() = 3
 		// index = 0 1 2
 		// id = 1 2 3
-		
+
 		articles.remove(articles.indexOf(foundArticle));
 
 		System.out.printf("%d번 게시물이 삭제 되었습니다\n", id);
@@ -156,21 +165,20 @@ public class ArticleController extends Controller {
 
 	private void doModify() {
 		String[] cmdBits = cmd.split(" ");
-		
-		if(cmdBits.length ==2) {
+
+		if (cmdBits.length == 2) {
 			System.out.println("명령어를 더 넣어주세요.");
 			return;
 		}
 
 		int id = Integer.parseInt(cmdBits[2]);
 		Article foundArticle = getArticleById(id);
-		
 
 		if (foundArticle == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
-		if(foundArticle.memberId != loginedMember.id) {
+		if (foundArticle.memberId != loginedMember.id) {
 			System.out.println("수정 권한이 없습니다.");
 			return;
 		}
@@ -196,12 +204,11 @@ public class ArticleController extends Controller {
 		return null;
 	}
 
-
 	public void makeTestData() {
 		System.out.println("게시물 테스트 데이터를 생성합니다.");
-		articles.add(new Article(1, Util.getNowDateStr(),1, "title 1", "body 1", 10));
-		articles.add(new Article(2, Util.getNowDateStr(),2, "title 2", "body 2", 20));
-		articles.add(new Article(3, Util.getNowDateStr(),2, "title 3", "body 3", 30));
+		articles.add(new Article(1, Util.getNowDateStr(), 1, "title 1", "body 1", 10));
+		articles.add(new Article(2, Util.getNowDateStr(), 2, "title 2", "body 2", 20));
+		articles.add(new Article(3, Util.getNowDateStr(), 2, "title 3", "body 3", 30));
 	}
 
 }

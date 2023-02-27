@@ -1,9 +1,9 @@
 package com.koreaIt.java.BAM.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.koreaIt.java.BAM.container.Container;
 import com.koreaIt.java.BAM.dto.Member;
 import com.koreaIt.java.BAM.util.Util;
 
@@ -14,7 +14,7 @@ public class MemberController extends Controller {
 
 	public MemberController(Scanner sc) {
 		this.sc = sc;
-		this.members = new ArrayList<>();
+		this.members = Container.memberDao.members;//Container. 만되어도 이미 객체가 만들어졌다.
 		this.lastMemberId = 3;
 	}
 
