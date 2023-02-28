@@ -10,14 +10,14 @@ import com.koreaIt.java.BAM.dto.Member;
 import com.koreaIt.java.BAM.util.Util;
 
 public class ArticleController extends Controller {
-
+	
+//	private List<Article> articles;
 	private Scanner sc;
-	private List<Article> articles;
 	private String cmd;
 
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
-		this.articles = Container.articleDao.articles;
+//		this.articles = Container.articleDao.articles;
 	}
 
 	public void doAction(String cmd, String MethodName) {
@@ -65,29 +65,18 @@ public class ArticleController extends Controller {
 
 	private void showList() {
 
-		if (articles.size() == 0) {
-			System.out.println("게시글이 없습니다");
-			return;// -> 리턴으로 함수를 종료시키되 넘겨주는 값은 없다.
-		}
-
 		String searchKeyword = cmd.substring("article list".length()).trim();
+		
+		System.out.println("검색어 :" + searchKeyword); 
 
-		List<Article> printArticles = articles; // articles를 컨트롤 하기 위해서 리모컨을 넘겨줌
-		if (searchKeyword.length() > 0) {
-			System.out.println("검색어 :" + searchKeyword);
-
-			printArticles = new ArrayList<>(); // 내용이 있을때만 리스트를 만들어준다. 진짜 객체 생성
-			for (Article article : articles) {
-				if (article.title.contains(searchKeyword)) {
-					printArticles.add(article);
-				}
-			}
-			if (printArticles.size() == 0) {
-				System.out.println("검색결과가 없습니다.");
-				return; // continue는 위에 반복문 while문으로 간다.
-			}
-
+		List<Article> printArticles = Container.articleService.getPrintArticles(searchKeyword);
+		// articles를 컨트롤 하기 위해서 리모컨을 넘겨줌
+		
+		if (printArticles.size() == 0) {
+			System.out.println("게시글이 없습니다");
+			return; // continue는 위에 반복문 while문으로 간다.
 		}
+		
 		System.out.println("번호	|	제목    | 작성자	| 조회수");
 		for (int i = printArticles.size() - 1; i >= 0; i--) {
 			Article article = printArticles.get(i);
