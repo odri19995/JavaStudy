@@ -13,13 +13,11 @@ public class ArticleController extends Controller {
 
 	private Scanner sc;
 	private List<Article> articles;
-	int lastArticleId;
 	private String cmd;
 
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
 		this.articles = Container.articleDao.articles;
-		this.lastArticleId = 3;
 	}
 
 	public void doAction(String cmd, String MethodName) {
@@ -49,8 +47,7 @@ public class ArticleController extends Controller {
 
 	private void doWrite() {
 
-		int id = lastArticleId + 1;
-		lastArticleId = id;
+		int id = Container.memberDao.getNewId();
 		String regDate = Util.getNowDateStr();
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
@@ -59,7 +56,9 @@ public class ArticleController extends Controller {
 
 		Article article = new Article(id, regDate, loginedMember.id, title, body);
 
-		articles.add(article);
+		Container.articleDao.add(article);
+		//컨트롤러는 실질적으로 직접적으로 데이터를 밀어넣으면 안된다. 
+//		articles.add(article);
 
 		System.out.printf("%d번 글이 생성되었습니다\n", id);
 	}
@@ -121,10 +120,21 @@ public class ArticleController extends Controller {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
+		String writerName= null;
+		List<Member> members = Container.memberDao.members;
+		
+		for(Member member :members) {
+			if(foundArticle.memberId== member.id){	
+				writerName= member.name;
+				break;
+				}
+			}
+		
 		System.out.printf("%d번 게시물은 존재합니다\n", id);
 		System.out.printf("번호 : %d\n", foundArticle.id);
 		System.out.printf("날짜 : %s\n", foundArticle.regDate); // .subString(0,10)
 		System.out.printf("제목 : %s\n", foundArticle.title);
+		System.out.printf("작성자 : %s\n", writerName);
 		System.out.printf("내용 : %s\n", foundArticle.body);
 		System.out.printf("조회수 : %d\n", foundArticle.viewCnt);
 		foundArticle.increaseViewCount();
@@ -206,9 +216,9 @@ public class ArticleController extends Controller {
 
 	public void makeTestData() {
 		System.out.println("게시물 테스트 데이터를 생성합니다.");
-		articles.add(new Article(1, Util.getNowDateStr(), 1, "title 1", "body 1", 10));
-		articles.add(new Article(2, Util.getNowDateStr(), 2, "title 2", "body 2", 20));
-		articles.add(new Article(3, Util.getNowDateStr(), 2, "title 3", "body 3", 30));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 1, "title 1", "body 1", 10));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 2, "title 2", "body 2", 20));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 2, "title 3", "body 3", 30));		
 	}
 
 }

@@ -10,12 +10,12 @@ import com.koreaIt.java.BAM.util.Util;
 public class MemberController extends Controller {
 	private Scanner sc;
 	private List<Member> members;
-	private int lastMemberId;
+
 
 	public MemberController(Scanner sc) {
 		this.sc = sc;
 		this.members = Container.memberDao.members;//Container. 만되어도 이미 객체가 만들어졌다.
-		this.lastMemberId = 3;
+
 	}
 
 	public void doAction(String cmd, String MethodName) {
@@ -41,8 +41,7 @@ public class MemberController extends Controller {
 
 	private void doJoin() {
 
-		int id = lastMemberId + 1;
-		lastMemberId = id;
+		int id = Container.memberDao.getNewId();
 		String regDate = Util.getNowDateStr();
 
 		String loginId = null;
@@ -80,7 +79,7 @@ public class MemberController extends Controller {
 		String name = sc.nextLine();
 
 		Member member = new Member(id, regDate, loginId, loginPw, name);
-		members.add(member);
+		Container.memberDao.add(member);
 
 		System.out.printf("%d번 회원이 가입하였습니다\n", id);
 
@@ -143,9 +142,9 @@ public class MemberController extends Controller {
 	}
 
 	public void makeTestData() {
-		members.add(new Member(1, Util.getNowDateStr(), "ABC", "123", "minsu"));
-		members.add(new Member(2, Util.getNowDateStr(), "title 2", "body 2", "simin"));
-		members.add(new Member(3, Util.getNowDateStr(), "title 3", "body 3", "happy"));
+		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getNowDateStr(), "ABC", "123", "minsu"));
+		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getNowDateStr(), "title 2", "body 2", "simin"));
+		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getNowDateStr(), "title 3", "body 3", "happy"));
 	}
 
 }
