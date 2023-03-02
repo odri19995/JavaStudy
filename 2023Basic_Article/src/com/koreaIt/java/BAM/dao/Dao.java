@@ -1,15 +1,9 @@
 package com.koreaIt.java.BAM.dao;
 
-public abstract class Dao {
-
-	protected int lastId;//전역변수는 생성자로 초기화를 주로 한다. 
-
-	Dao() {
-		lastId = 0;
-	}
-
-
-	public int getNewId() {
+public class Dao {
+	public int lastId;
+	
+	public int getLastId() {
 		return lastId + 1;
 	}
 }

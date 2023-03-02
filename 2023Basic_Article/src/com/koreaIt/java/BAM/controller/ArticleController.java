@@ -1,37 +1,41 @@
 package com.koreaIt.java.BAM.controller;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Scanner;
 
 import com.koreaIt.java.BAM.container.Container;
 import com.koreaIt.java.BAM.dto.Article;
-import com.koreaIt.java.BAM.dto.Member;
+import com.koreaIt.java.BAM.service.ArticleService;
+import com.koreaIt.java.BAM.service.MemberService;
 import com.koreaIt.java.BAM.util.Util;
 
 public class ArticleController extends Controller {
-	
-//	private List<Article> articles;
+
 	private Scanner sc;
 	private String cmd;
-
+	private ArticleService articleService;
+	private MemberService memberService;
+	
 	public ArticleController(Scanner sc) {
+		this.articleService = Container.articleService;
+		this.memberService = Container.memberService;
 		this.sc = sc;
-//		this.articles = Container.articleDao.articles;
 	}
 
-	public void doAction(String cmd, String MethodName) {
+	@Override
+	public void doAction(String cmd, String methodName) {
 		this.cmd = cmd;
-
-		switch (MethodName) {
+		
+		switch(methodName) {
+		case "write":
+			doWrite();
+			break;
 		case "list":
 			showList();
 			break;
 		case "detail":
 			showDetail();
-			break;
-		case "write":
-			doWrite();
 			break;
 		case "modify":
 			doModify();
@@ -40,14 +44,13 @@ public class ArticleController extends Controller {
 			doDelete();
 			break;
 		default:
-			System.out.println("존재하지 않는 명령어 입니다.");
+			System.out.println("존재하지 않는 명령어 입니다");
 			break;
 		}
 	}
-
+	
 	private void doWrite() {
-
-		int id = Container.memberDao.getNewId();
+		int id = articleService.getLastId();
 		String regDate = Util.getNowDateStr();
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
@@ -56,158 +59,124 @@ public class ArticleController extends Controller {
 
 		Article article = new Article(id, regDate, loginedMember.id, title, body);
 
-		Container.articleDao.add(article);
-		//컨트롤러는 실질적으로 직접적으로 데이터를 밀어넣으면 안된다. 
-//		articles.add(article);
-
+		articleService.add(article);
+		
 		System.out.printf("%d번 글이 생성되었습니다\n", id);
 	}
 
 	private void showList() {
-
 		String searchKeyword = cmd.substring("article list".length()).trim();
-		
-		System.out.println("검색어 :" + searchKeyword); 
 
-		List<Article> printArticles = Container.articleService.getPrintArticles(searchKeyword);
-		// articles를 컨트롤 하기 위해서 리모컨을 넘겨줌
+		List<Article> printArticles = articleService.getPrintArticles(searchKeyword);
 		
 		if (printArticles.size() == 0) {
 			System.out.println("게시글이 없습니다");
-			return; // continue는 위에 반복문 while문으로 간다.
+			return;
 		}
-		
-		System.out.println("번호	|	제목    | 작성자	| 조회수");
+
+		System.out.println("번호	|	제목	|		날짜		|	작성자	|	조회");
 		for (int i = printArticles.size() - 1; i >= 0; i--) {
 			Article article = printArticles.get(i);
-			String writerName= null;
-			List<Member> members = Container.memberDao.members;
 			
-			for(Member member :members) {
-				if(article.memberId== member.id){	
-					writerName= member.name;
-					break;
-					}
-				}
-			System.out.printf("%d	|	%s|    %s   |%d\n", article.id, article.title,writerName, article.viewCnt);
+			String writerName = memberService.getWriterName(article.memberId);
+			
+			System.out.printf("%d	|	%s	|	%s	|	%s	|	%d\n", article.id, article.title, article.regDate, writerName,
+					article.viewCnt);
 		}
 	}
 
 	private void showDetail() {
 		String[] cmdBits = cmd.split(" ");
-
+		
 		if (cmdBits.length == 2) {
-			System.out.println("명령어를 더 넣어주세요.");
+			System.out.println("명령어를 확인해주세요");
 			return;
 		}
-
+		
 		int id = Integer.parseInt(cmdBits[2]);
 
-		Article foundArticle = getArticleById(id);
+		Article foundArticle = articleService.getArticleById(id);
 
 		if (foundArticle == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
-		String writerName= null;
-		List<Member> members = Container.memberDao.members;
+
+		String writerName = memberService.getWriterName(foundArticle.memberId);
 		
-		for(Member member :members) {
-			if(foundArticle.memberId== member.id){	
-				writerName= member.name;
-				break;
-				}
-			}
+		foundArticle.increaseViewCount();
 		
-		System.out.printf("%d번 게시물은 존재합니다\n", id);
 		System.out.printf("번호 : %d\n", foundArticle.id);
-		System.out.printf("날짜 : %s\n", foundArticle.regDate); // .subString(0,10)
-		System.out.printf("제목 : %s\n", foundArticle.title);
+		System.out.printf("날짜 : %s\n", foundArticle.regDate);
 		System.out.printf("작성자 : %s\n", writerName);
+		System.out.printf("제목 : %s\n", foundArticle.title);
 		System.out.printf("내용 : %s\n", foundArticle.body);
 		System.out.printf("조회수 : %d\n", foundArticle.viewCnt);
-		foundArticle.increaseViewCount();
+	}
+	
+	private void doModify() {
+		String[] cmdBits = cmd.split(" ");
+		
+		if (cmdBits.length == 2) {
+			System.out.println("명령어를 확인해주세요");
+			return;
+		}
+		
+		int id = Integer.parseInt(cmdBits[2]);
 
+		Article foundArticle = articleService.getArticleById(id);
+		
+		if (foundArticle == null) {
+			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
+			return;
+		}
+		
+		if(foundArticle.memberId != loginedMember.id) {
+			System.out.println("권한이 없습니다");
+			return;
+		}
+
+		System.out.printf("수정할 제목 : ");
+		String title = sc.nextLine();
+		System.out.printf("수정할 내용 : ");
+		String body = sc.nextLine();
+
+		articleService.articleModify(foundArticle, title, body);
+		
+		System.out.printf("%d번글이 수정되었습니다\n", id);
 	}
 
 	private void doDelete() {
-
 		String[] cmdBits = cmd.split(" ");
-
+		
 		if (cmdBits.length == 2) {
-			System.out.println("명령어를 더 넣어주세요.");
+			System.out.println("명령어를 확인해주세요");
 			return;
 		}
-
+		
 		int id = Integer.parseInt(cmdBits[2]);
 
-		Article foundArticle = getArticleById(id);
+		Article foundArticle = articleService.getArticleById(id);
 
 		if (foundArticle == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
 			return;
 		}
-		if (foundArticle.memberId != loginedMember.id) {
-			System.out.println("수정 권한이 없습니다.");
+		
+		if(foundArticle.memberId != loginedMember.id) {
+			System.out.println("권한이 없습니다");
 			return;
 		}
 
-		// size() = 3
-		// index = 0 1 2
-		// id = 1 2 3
+		articleService.remove(foundArticle);
 
-		articles.remove(articles.indexOf(foundArticle));
-
-		System.out.printf("%d번 게시물이 삭제 되었습니다\n", id);
-
+		System.out.printf("%d번 게시글을 삭제했습니다\n", id);
 	}
-
-	private void doModify() {
-		String[] cmdBits = cmd.split(" ");
-
-		if (cmdBits.length == 2) {
-			System.out.println("명령어를 더 넣어주세요.");
-			return;
-		}
-
-		int id = Integer.parseInt(cmdBits[2]);
-		Article foundArticle = getArticleById(id);
-
-		if (foundArticle == null) {
-			System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
-			return;
-		}
-		if (foundArticle.memberId != loginedMember.id) {
-			System.out.println("수정 권한이 없습니다.");
-			return;
-		}
-		System.out.printf("제목 : ");
-		String title = sc.nextLine();
-		System.out.printf("내용 : ");
-		String body = sc.nextLine();
-
-		foundArticle.title = title;
-		foundArticle.body = body;
-
-		System.out.printf("%d글이 수정되었습니다.\n", id);
-
-	}
-
-	private Article getArticleById(int id) {
-
-		for (Article article : articles) {
-			if (article.id == id)
-				return article;
-		}
-
-		return null;
-	}
-
+	
 	public void makeTestData() {
-		System.out.println("게시물 테스트 데이터를 생성합니다.");
-		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 1, "title 1", "body 1", 10));
-		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 2, "title 2", "body 2", 20));
-		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 2, "title 3", "body 3", 30));		
+		System.out.println("게시물 테스트 데이터를 생성합니다");
+		articleService.add(new Article(articleService.getLastId(), Util.getNowDateStr(), 1, "제목1", "내용1", 10));
+		articleService.add(new Article(articleService.getLastId(), Util.getNowDateStr(), 2, "제목2", "내용2", 20));
+		articleService.add(new Article(articleService.getLastId(), Util.getNowDateStr(), 2, "제목3", "내용3", 30));
 	}
-
 }

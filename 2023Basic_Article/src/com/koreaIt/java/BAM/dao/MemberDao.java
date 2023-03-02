@@ -6,16 +6,46 @@ import java.util.List;
 import com.koreaIt.java.BAM.dto.Member;
 
 public class MemberDao extends Dao {
-		public List<Member> members;
-
-		public MemberDao() {
-			this.members = new ArrayList<>();
+	private List<Member> members;
+	
+	public MemberDao() {
+		this.members = new ArrayList<>();
+	}
+	
+	public void add(Member member) {
+		members.add(member);
+		lastId++;
+	}
+	
+	public String getWriterName(int memberId) {
+		for(Member member : members) {
+			if(memberId == member.id) {
+				return member.name;
+			}
+		}
+		return null;
+	}
+	
+	public Member getMemberByLoginId(String loginId) {
+		
+		for (Member member : members) {
+			if(member.loginId.equals(loginId)) {
+				return member;
+			}
 		}
 		
-
-		public void add(Member member) {
-			members.add(member);
-			lastId++;
-		}
-
+		return null;
 	}
+	
+	public boolean loginIdDupChk(String loginId) {
+		
+		Member member = getMemberByLoginId(loginId);
+		
+		if (member == null) {
+			return true;
+		}
+		
+		return false;
+	}
+
+}
